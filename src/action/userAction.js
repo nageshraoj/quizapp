@@ -1,11 +1,25 @@
-export const logOut = () => {
+export const LoginRequested = (user) => {
   return {
-    type: 'LOGOUT',
+    type: 'LOG_IN_REQUEST',
+    data: user,
   }
 }
 
-export const logIn = () => {
+export const LoginSuccessed = (token) => {
   return {
-    type: 'LOGIN',
+    type: 'LOG_IN_SUCCESS',
+    payload: token,
+  }
+}
+
+export const LoginFailed = () => {
+  return {
+    type: 'LOG_IN_FAILURE',
+  }
+}
+
+export const Logout = () => {
+  return {
+    type: 'LOG_OUT',
   }
 }

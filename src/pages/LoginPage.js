@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
+import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js'
 import { Button, TextField } from '@material-ui/core'
 import { useDispatch } from 'react-redux'
-import { logIn } from '../action/userAction'
+import { LoginFailed, LoginRequested } from '../action/userAction'
 import { makeStyles } from '@material-ui/core/styles'
 
 const LoginPage = () => {
+  const [username, setUserName] = useState('')
+  const [password, setPassword] = useState('')
   const dispatch = useDispatch()
 
   const logInStyle = makeStyles((theme) => ({
@@ -44,17 +47,61 @@ const LoginPage = () => {
   const sytle = logInStyle()
 
   const userLogIn = () => {
-    dispatch(logIn())
+    var authenticationData = {
+      Username: username,
+      Password: password,
+    }
+
+    var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
+      authenticationData
+    )
+    var poolData = {
+      UserPoolId: process.env.REACT_APP_USERPOOLID, // User pool id
+      ClientId: process.env.REACT_APP_CLIENTID, //  client id
+    }
+
+    var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData)
+    var userData = {
+      Username: username,
+      Pool: userPool,
+    }
+    var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData)
+
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: function (result) {
+        var token = result.getAccessToken().getJwtToken()
+        // console.log(token)
+        localStorage.setItem('token', token)
+        dispatch(LoginRequested(token))
+        return token
+      },
+
+      onFailure: function (err) {
+        dispatch(LoginFailed())
+        return err.message || JSON.stringify(err)
+      },
+    })
   }
   return (
     <div className={sytle.logInpageStyle}>
       <div className={sytle.loginForm}>
         <h1>Login Page</h1>
         <div className={sytle.fieldStyle}>
-          <TextField variant='outlined' label='User ID' />
+          <TextField
+            variant='outlined'
+            value={username}
+            onChange={(e) => setUserName(e.target.value)}
+            label='User ID'
+          />
         </div>
         <div className={sytle.fieldStyle}>
-          <TextField variant='outlined' type='password' label='Password' />
+          <TextField
+            variant='outlined'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type='password'
+            label='Password'
+          />
         </div>
         <div className={sytle.fieldStyle}>
           <Button onClick={userLogIn} className={sytle.btnStyle}>

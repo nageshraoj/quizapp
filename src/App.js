@@ -10,10 +10,10 @@ import LoginPage from './pages/LoginPage'
 
 const App = () => {
   const isUserLogin = useSelector((state) => state.isUserLogin)
-  console.log(isUserLogin)
+  
   return (
     <ThemeProvider theme={theme}>
-      {isUserLogin ? (
+      {isUserLogin.authen ? (
         <BrowserRouter>
           <HeaderComponent />
           <Route path='/' exact component={QuizPage} />

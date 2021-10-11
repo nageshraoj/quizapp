@@ -3,14 +3,14 @@ import { AppBar, Toolbar, Tabs, Tab } from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
-import { logOut } from '../action/userAction'
+import { Logout } from '../action/userAction'
 
 const HeaderComponent = () => {
   const [index, setIndex] = useState(0)
   const dispatch = useDispatch()
 
   const userLogOut = () => {
-    dispatch(logOut())
+    dispatch(Logout())
   }
   const headerSyle = makeStyles((theme) => ({
     tlbarStyle: {
